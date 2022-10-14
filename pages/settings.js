@@ -2,7 +2,7 @@ import React from 'react';
 import TablePage from '../components/tablePage';
 import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
 
-export default function Foods() {
+export default function Categories() {
     const [rows, setRows] = React.useState([]);
     const [cuisines, setCuisines] = React.useState([]);
     const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/';
@@ -35,26 +35,16 @@ export default function Foods() {
         {
             field: 'cuisines',
             headerName: 'Cuisines',
-            width: 300,
+            width: 110,
             type: 'multiselect',
             values: cuisines,
-            title: (data) => data.name,
-            value: (data) => data.id,
-            selectedValue: (datas) => {
-                const data = [];
-                for (let i = 0; i < datas.length; i++) {
-                    data.push(datas[i].id);
-                }
-                return data;
+            valueGetter: (params) => {
+                if (params.value) return params.value.map(async (value) => getRef(value).then((response) => response));
             },
-            onChange: (datas) => {
-                const data = [];
-                for (let i = 0; i < datas.length; i++) {
-                    data.push(createRef(`${docroot}cuisines`, datas[i]));
-                }
-                return data;
-            },
-            
+            title: () => { },
+            value: () => { },
+            onChange: () => { },
+
         },
         {
             field: 'status',
@@ -125,7 +115,7 @@ export default function Foods() {
     }
     return (
         <div>
-            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`${docroot}foods`} />
+            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} />
         </div>
     )
 }

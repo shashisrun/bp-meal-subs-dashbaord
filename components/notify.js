@@ -30,11 +30,26 @@ export default function Notify() {
     return (
         <>
             {notification ?
-                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} onClick={() => notification.click ? notification.click : null}>
-                    <Alert onClose={handleClose} severity={notification.type} sx={{ width: '100%' }}>
-                        {notification.message}
-                    </Alert>
-                </Snackbar>
+                <>
+                    {notification.type
+                        ?
+                        <>
+                            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} onClick={() => notification.click ? notification.click : null}>
+                                <Alert onClose={handleClose} severity={notification.type} sx={{ width: '100%' }}>
+                                    {notification.message}
+                                </Alert>
+                            </Snackbar>
+                        </>
+                        :
+                        <>
+                            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} onClick={() => notification.click ? notification.click : null}>
+                                <Alert onClose={handleClose} sx={{ width: '100%' }}>
+                                    {notification.title}
+                                </Alert>
+                            </Snackbar>
+                        </>
+                    }
+                </> 
             : <></>}
         </>
     )

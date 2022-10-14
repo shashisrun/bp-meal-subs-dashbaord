@@ -53,14 +53,13 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
         } else if (columns[i].type === 'multiselect') {
             delete columns[i].type
             columns[i].renderCell = (params) => {
-                // console.log(params.value);
                 return (
                     <>
-                        {/* <MultipleSelectBox dataArray={columns[i].value()} label={columns[i].headerName} titleFn={columns[i].title} valueFn={columns[i].value} onChange={(data) => {
-                            const values = { ...params.row[columns[i].field], value: data }
-                            console.log(values);
-                            handleChange(values)
-                        }} /> */}
+                        <MultipleSelectBox dataArray={columns[i].values} label={columns[i].headerName} titleFn={columns[i].title} valueFn={columns[i].value} onChange={(data) => {
+                            const values = columns[i].onChange(data);
+                            const updateddata = { ...params, value: values}
+                            handleChange(updateddata)
+                        }} selectedValues={columns[i].selectedValue(params.value)} />
                     </>
                 )
             }
@@ -71,8 +70,19 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
     const handleChange = async (params, event) => {
         const data = {};
         data[params.field] = params.value;
+        console.log(docRoot, data, params.id);
         const result = await updateDocument(docRoot, data, params.id);
-        console.log(result);
+        if (result) {
+            setNotification({
+                type: 'success',
+                message: `${title} updated successfully`
+            })
+        } else {
+            setNotification({
+                type: 'error',
+                message: `Something went wrong while updating ${title}`
+            })
+        }
     }
 
     const handleDelete = (params, event) => {

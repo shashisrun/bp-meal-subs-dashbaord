@@ -29,9 +29,9 @@ function getStyles(selectedValue, dataArray, theme) {
     };
 }
 
-export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, onChange}) {
+export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, onChange, selectedValues}) {
     const theme = useTheme();
-    const [selectedValue, setSelectedValue] = React.useState([]);
+    const [selectedValue, setSelectedValue] = React.useState(selectedValues ? selectedValues : []);
 
     const handleChange = (event) => {
         const {
@@ -45,7 +45,9 @@ export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, o
     };
 
     return (
-        <div>
+        <Box
+            sx={{ width: '100%' }}
+        >
             <FormControl sx={{ width: '100%' }}>
                 <InputLabel id="multiple-chip-label">{label}</InputLabel>
                 <Select
@@ -82,6 +84,6 @@ export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, o
                     ))}
                 </Select>
             </FormControl>
-        </div>
+        </Box>
     );
 }

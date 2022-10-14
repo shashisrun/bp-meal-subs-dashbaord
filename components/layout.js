@@ -2,7 +2,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
+import MonitorWeightIcon from '@mui/icons-material/MonitorWeight';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
@@ -32,9 +32,9 @@ export default function Layout({ children }) {
             link: '/foods'
         },
         {
-            title: "Tables",
-            icon: TableRestaurantIcon,
-            link: '/tables'
+            title: "Plans",
+            icon: MonitorWeightIcon,
+            link: '/plans'
         },
         {
             title: "Customers",
