@@ -1,12 +1,11 @@
 import React from 'react';
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../config/firebase'
-import { getDocument, messaging, getFCMToken } from "../config/firebase";
+import { getDocument, messaging } from "../config/firebase";
 
 const NotificationContext = React.createContext(null);
 
 const Notification = () => {
-    getFCMToken();
     //....
 }
 

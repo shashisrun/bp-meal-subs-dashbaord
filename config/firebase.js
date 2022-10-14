@@ -43,36 +43,67 @@ let messaging;
 if (typeof window !== 'undefined') {
     analytics = getAnalytics(app);
     messaging = getMessaging(app);
-    const gettokenfromlocal = async () => {
-        const token = await localforage.getItem("fcm_token");
-        if (token) return token;
-        return null;
-    };
-    gettokenfromlocal().then((tokenInLocalForage) => {
-        // Request the push notification permission from browser
-        const getNotificationStatus = async () => {
-            return await Notification.requestPermission()
-        }
-        getNotificationStatus().then((status) => {
-            if (status && status === "granted") {
-                // Get new token from Firebase
-                const getNewToken = async () => {
-                    return await getToken({
-                        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAP_ID,
-                    });
-                }
-                alert(status);
-                getNewToken().then((fcm_token) => {
-                    alert(fcm_token);
-                    // Set token in our local storage
-                    if (fcm_token) {
-                        localforage.setItem("fcm_token", fcm_token);
-                        tokenInLocalForage = fcm_token;
-                    }
-                })
+    // Request the push notification permission from browser
+    const getNotificationStatus = async () => {
+        return await Notification.requestPermission()
+    }
+    getNotificationStatus().then((status) => {
+        if (status && status === "granted") {
+            // Get new token from Firebase
+            const getNewToken = async () => {
+                const data = await getToken(messaging, {
+                    vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAP_ID,
+                });
+                return data;
             }
-        })
+            getNewToken().then((fcm_token) => {
+                // Set token in our local storage
+                if (fcm_token) {
+                    localforage.setItem("fcm_token", fcm_token);
+                }
+            })
+        }
+    })
 
+    // const gettokenfromlocal = async () => {
+    //     const token = await localforage.getItem("fcm_token");
+    //     if (token) return token;
+    //     return null;
+    // };
+    // gettokenfromlocal().then((tokenInLocalForage) => {
+    //     if (!tokenInLocalForage) {
+    //         let token;
+    //         // Request the push notification permission from browser
+    //         const getNotificationStatus = async () => {
+    //             return await Notification.requestPermission()
+    //         }
+    //         getNotificationStatus().then((status) => {
+    //             if (status && status === "granted") {
+    //                 // Get new token from Firebase
+    //                 const getNewToken = async () => {
+    //                     const data = await getToken(messaging, {
+    //                         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAP_ID,
+    //                     });
+    //                     return data;
+    //                 }
+    //                 getNewToken().then((fcm_token) => {
+    //                     // Set token in our local storage
+    //                     if (fcm_token) {
+    //                         localforage.setItem("fcm_token", fcm_token);
+    //                         token = fcm_token;
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //         return token;
+    //     } else {
+    //         return tokenInLocalForage;
+    //     }
+
+    // })
+
+    onMessage(messaging, (payload) => {
+        console.log(payload);
     })
     
 }
@@ -207,33 +238,6 @@ async function deleteFile(path) {
     });
 }
 
-async function getFCMToken() {
-    try {
-        const tokenInLocalForage = await localforage.getItem("fcm_token");
-        // Return the token if it is alredy in our local storage
-        if (tokenInLocalForage !== null) {
-            return tokenInLocalForage;
-        }
-        // Request the push notification permission from browser
-        const status = await Notification.requestPermission();
-        if (status && status === "granted") {
-            // Get new token from Firebase
-            const fcm_token = await messaging.getToken({
-                vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAP_ID,
-            });
-
-            // Set token in our local storage
-            if (fcm_token) {
-                localforage.setItem("fcm_token", fcm_token);
-                return fcm_token;
-            }
-        }
-    } catch (e) {
-        console.error(error);
-        return null;
-    }
-}
-
 
 export {
     app,
@@ -251,6 +255,5 @@ export {
     subscribe,
     getRef,
     messaging,
-    analytics,
-    getFCMToken
+    analytics
 };

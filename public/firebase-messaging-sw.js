@@ -13,6 +13,7 @@ const app = initializeApp({
 
 const messaging = getMessaging(app);
 
+
 // // Both of them ain't working
 
 // //background notifications will be received here
