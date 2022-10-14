@@ -1,7 +1,7 @@
-importScripts("https://www.gstatic.com/firebasejs/9.11.0/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/9.11.0/firebase-messaging.js");
+importScripts("https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/8.0.0/firebase-messaging.js");
 
-const app = initializeApp({
+const app = firebase.initializeApp({
     apiKey: "AIzaSyDfTxQBP0IKBil0wJJM02XKy7BzNAR6IFg",
     authDomain: "gobistro-41952.firebaseapp.com",
     projectId: "gobistro-41952",
@@ -11,7 +11,7 @@ const app = initializeApp({
     measurementId: "G-PVQ0RWK6XG"
 });
 
-const messaging = getMessaging(app);
+const messaging = firebase.messaging();
 
 
 // // Both of them ain't working
