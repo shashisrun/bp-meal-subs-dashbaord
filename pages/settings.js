@@ -5,7 +5,7 @@ import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
 export default function Categories() {
     const [rows, setRows] = React.useState([]);
     const [cuisines, setCuisines] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/';
+    const docroot = 'settings';
 
     React.useEffect(() => {
         const fetchData = async () => {

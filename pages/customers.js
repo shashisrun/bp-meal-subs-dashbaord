@@ -1,18 +1,14 @@
 import React from 'react';
 import TablePage from '../components/tablePage';
-import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
+import { getDocuments, createRef, subscribe } from '../config/firebase';
 
-export default function Customers() {
+export default function Plans() {
     const [rows, setRows] = React.useState([]);
-    const [cuisines, setCuisines] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/';
+
 
     React.useEffect(() => {
         const fetchData = async () => {
-            subscribe(`${docroot}foods`, setRows)
-            getDocuments(`${docroot}cuisines`).then((data) => {
-                setCuisines(data);
-            })
+            subscribe(`users`, setRows)
         }
         fetchData();
     }, [])
@@ -21,30 +17,22 @@ export default function Customers() {
         { field: 'id', headerName: 'ID', width: 200 },
         {
             field: 'name',
-            headerName: 'Meal Name',
+            headerName: 'Customer Name',
             width: 150,
             editable: true,
         },
         {
-            field: 'thumbnails',
-            headerName: 'Thumbnail',
+            field: 'profile',
+            headerName: 'Profile Photo',
             width: 110,
             editable: false,
             type: 'image',
         },
         {
-            field: 'cuisines',
-            headerName: 'Cuisines',
-            width: 110,
-            type: 'multiselect',
-            values: cuisines,
-            valueGetter: (params) => {
-                if (params.value) return params.value.map(async (value) => getRef(value).then((response) => response));
-            },
-            title: () => { },
-            value: () => { },
-            onChange: () => { },
-
+            field: 'phone',
+            headerName: 'Customer Phone',
+            width: 150,
+            editable: false,
         },
         {
             field: 'status',
@@ -68,54 +56,49 @@ export default function Customers() {
     ];
 
     const addCuisine = {
-        title: 'Meal',
-        document: `${docroot}foods`,
-        submitLabel: 'Add Meal',
-        fields: [
-            {
-                type: 'text',
-                name: 'Meal Name',
-                required: true,
-                key: 'name'
-            },
-            {
-                type: 'file',
-                name: 'Meal Image',
-                required: false,
-                multiple: 10,
-                key: 'thumbnails',
-                accept: 'image/*',
-                uploadPath: 'restaurants/oscarclub/meals'
-            },
-            {
-                type: 'select',
-                multiple: true,
-                name: 'Cuisines',
-                required: true,
-                key: 'cuisines',
-                title: (data) => data.name,
-                value: (data) => data.id,
-                preprocess: (datas) => {
-                    if (datas) {
-                        return datas.map(data => createRef(`${docroot}cuisines`, data))
-                    } else {
-                        return []
-                    }
-                },
-                options: cuisines
-            },
-            {
-                type: 'checkbox',
-                name: 'Active',
-                required: true,
-                key: 'status',
-                checked: true
-            },
-        ]
+        // title: 'Plan',
+        // document: `plans`,
+        // submitLabel: 'Add Plan',
+        // fields: [
+        //     {
+        //         type: 'text',
+        //         name: 'Plan Name',
+        //         required: true,
+        //         key: 'name'
+        //     },
+        //     {
+        //         type: 'file',
+        //         name: 'Plan Image',
+        //         required: false,
+        //         multiple: 10,
+        //         key: 'thumbnails',
+        //         accept: 'image/*',
+        //         uploadPath: 'plans'
+        //     },
+        //     {
+        //         type: 'text',
+        //         name: 'Monthly Fee',
+        //         required: true,
+        //         key: 'monthlyFee'
+        //     },
+        //     {
+        //         type: 'text',
+        //         name: 'Yearly Fee',
+        //         required: true,
+        //         key: 'yearlyFee'
+        //     },
+        //     {
+        //         type: 'checkbox',
+        //         name: 'Active',
+        //         required: true,
+        //         key: 'status',
+        //         checked: true
+        //     },
+        // ]
     }
     return (
         <div>
-            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} />
+            <TablePage title={'Customers'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`plans`} rowHeight={150} />
         </div>
     )
 }

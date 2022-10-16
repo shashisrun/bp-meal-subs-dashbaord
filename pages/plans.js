@@ -1,18 +1,14 @@
 import React from 'react';
 import TablePage from '../components/tablePage';
-import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
+import { getDocuments, createRef, subscribe } from '../config/firebase';
 
 export default function Plans() {
     const [rows, setRows] = React.useState([]);
-    const [cuisines, setCuisines] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/';
+
 
     React.useEffect(() => {
         const fetchData = async () => {
-            subscribe(`${docroot}foods`, setRows)
-            getDocuments(`${docroot}cuisines`).then((data) => {
-                setCuisines(data);
-            })
+            subscribe(`plans`, setRows)
         }
         fetchData();
     }, [])
@@ -21,7 +17,7 @@ export default function Plans() {
         { field: 'id', headerName: 'ID', width: 200 },
         {
             field: 'name',
-            headerName: 'Meal Name',
+            headerName: 'Plan Name',
             width: 150,
             editable: true,
         },
@@ -33,18 +29,16 @@ export default function Plans() {
             type: 'image',
         },
         {
-            field: 'cuisines',
-            headerName: 'Cuisines',
-            width: 110,
-            type: 'multiselect',
-            values: cuisines,
-            valueGetter: (params) => {
-                if (params.value) return params.value.map(async (value) => getRef(value).then((response) => response));
-            },
-            title: () => { },
-            value: () => { },
-            onChange: () => { },
-
+            field: 'monthlyFee',
+            headerName: 'Monthly Fee',
+            width: 150,
+            editable: true,
+        },
+        {
+            field: 'yearlyFee',
+            headerName: 'Yearly Fee',
+            width: 150,
+            editable: true,
         },
         {
             field: 'status',
@@ -68,41 +62,36 @@ export default function Plans() {
     ];
 
     const addCuisine = {
-        title: 'Meal',
-        document: `${docroot}foods`,
-        submitLabel: 'Add Meal',
+        title: 'Plan',
+        document: `plans`,
+        submitLabel: 'Add Plan',
         fields: [
             {
                 type: 'text',
-                name: 'Meal Name',
+                name: 'Plan Name',
                 required: true,
                 key: 'name'
             },
             {
                 type: 'file',
-                name: 'Meal Image',
+                name: 'Plan Image',
                 required: false,
                 multiple: 10,
                 key: 'thumbnails',
                 accept: 'image/*',
-                uploadPath: 'restaurants/oscarclub/meals'
+                uploadPath: 'plans'
             },
             {
-                type: 'select',
-                multiple: true,
-                name: 'Cuisines',
+                type: 'text',
+                name: 'Monthly Fee',
                 required: true,
-                key: 'cuisines',
-                title: (data) => data.name,
-                value: (data) => data.id,
-                preprocess: (datas) => {
-                    if (datas) {
-                        return datas.map(data => createRef(`${docroot}cuisines`, data))
-                    } else {
-                        return []
-                    }
-                },
-                options: cuisines
+                key: 'monthlyFee'
+            },
+            {
+                type: 'text',
+                name: 'Yearly Fee',
+                required: true,
+                key: 'yearlyFee'
             },
             {
                 type: 'checkbox',
@@ -115,7 +104,7 @@ export default function Plans() {
     }
     return (
         <div>
-            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} />
+            <TablePage title={'Plans'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`plans`} rowHeight={150} />
         </div>
     )
 }

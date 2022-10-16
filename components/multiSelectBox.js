@@ -29,19 +29,23 @@ function getStyles(selectedValue, dataArray, theme) {
     };
 }
 
-export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, onChange, selectedValues}) {
+export default function MultipleSelectBox({dataArray, label, titleFn, valueFn, onChange, selectedValues, multiple}) {
     const theme = useTheme();
     const [selectedValue, setSelectedValue] = React.useState(selectedValues ? selectedValues : []);
 
     const handleChange = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedValue(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-        onChange(typeof value === 'string' ? value.split(',') : value,);
+        const limit = multiple ? multiple : dataArray.length;
+        if (selectedValue.length < limit) {
+            const {
+                target: { value },
+            } = event;
+            setSelectedValue(
+                // On autofill we get a stringified value.
+                typeof value === 'string' ? value.split(',') : value,
+            );
+            onChange(typeof value === 'string' ? value.split(',') : value,);
+            
+        }
     };
 
     return (

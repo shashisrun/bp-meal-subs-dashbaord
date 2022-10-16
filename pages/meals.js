@@ -1,16 +1,16 @@
 import React from 'react';
 import TablePage from '../components/tablePage';
-import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
+import { getDocuments, createRef, subscribe } from '../config/firebase';
 
-export default function Foods() {
+export default function Meals() {
     const [rows, setRows] = React.useState([]);
     const [cuisines, setCuisines] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/';
+
 
     React.useEffect(() => {
         const fetchData = async () => {
-            subscribe(`${docroot}foods`, setRows)
-            getDocuments(`${docroot}cuisines`).then((data) => {
+            subscribe(`meals`, setRows)
+            getDocuments(`cuisines`).then((data) => {
                 setCuisines(data);
             })
         }
@@ -33,13 +33,20 @@ export default function Foods() {
             type: 'image',
         },
         {
+            field: 'description',
+            headerName: 'Description',
+            type: 'textarea',
+            width: 300,
+        },
+        {
             field: 'cuisines',
             headerName: 'Cuisines',
             width: 300,
-            type: 'multiselect',
+            type: 'select',
             values: cuisines,
             title: (data) => data.name,
             value: (data) => data.id,
+            multiple: 5,
             selectedValue: (datas) => {
                 const data = [];
                 for (let i = 0; i < datas.length; i++) {
@@ -50,11 +57,40 @@ export default function Foods() {
             onChange: (datas) => {
                 const data = [];
                 for (let i = 0; i < datas.length; i++) {
-                    data.push(createRef(`${docroot}cuisines`, datas[i]));
+                    data.push(createRef(`cuisines`, datas[i]));
                 }
                 return data;
             },
             
+        },
+        {
+            field: 'mealType',
+            headerName: 'Meal Type',
+            width: 200,
+            type: 'select',
+            values: [
+                {
+                    name: 'Vegetarian',
+                    value: 'vegetarian',
+                },
+                {
+                    name: 'Eggiterian',
+                    value: 'eggiterian',
+                },
+                {
+                    name: 'Non Vegetarian',
+                    value: 'non-vegetarian',
+                },
+            ],
+            title: (data) => data.name,
+            value: (data) => data.value,
+            selectedValue: (data) => {
+                return data;
+            },
+            onChange: (data) => {
+                return data;
+            },
+
         },
         {
             field: 'status',
@@ -79,7 +115,7 @@ export default function Foods() {
 
     const addCuisine = {
         title: 'Meal',
-        document: `${docroot}foods`,
+        document: `meals`,
         submitLabel: 'Add Meal',
         fields: [
             {
@@ -95,11 +131,17 @@ export default function Foods() {
                 multiple: 10,
                 key: 'thumbnails',
                 accept: 'image/*',
-                uploadPath: 'restaurants/oscarclub/meals'
+                uploadPath: 'meals'
+            },
+            {
+                type: 'textarea',
+                name: 'Description',
+                required: true,
+                key: 'description',
             },
             {
                 type: 'select',
-                multiple: true,
+                multiple: 5,
                 name: 'Cuisines',
                 required: true,
                 key: 'cuisines',
@@ -107,12 +149,37 @@ export default function Foods() {
                 value: (data) => data.id,
                 preprocess: (datas) => {
                     if (datas) {
-                        return datas.map(data => createRef(`${docroot}cuisines`, data))
+                        return datas.map(data => createRef(`cuisines`, data))
                     } else {
                         return []
                     }
                 },
                 options: cuisines
+            },
+            {
+                type: 'select',
+                name: 'Meal Type',
+                required: true,
+                key: 'mealType',
+                title: (data) => {return data.name},
+                value: (data) => {return data.value},
+                preprocess: (datas) => {
+                    return datas
+                },
+                options: [
+                    {
+                        name: 'Vegetarian',
+                        value: 'vegetarian',
+                    },
+                    {
+                        name: 'Eggiterian',
+                        value: 'eggiterian',
+                    },
+                    {
+                        name: 'Non Vegetarian',
+                        value: 'non-vegetarian',
+                    },
+                ]
             },
             {
                 type: 'checkbox',
@@ -125,7 +192,7 @@ export default function Foods() {
     }
     return (
         <div>
-            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`${docroot}foods`} />
+            <TablePage title={'Meals'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`meals`} rowHeight={150} />
         </div>
     )
 }

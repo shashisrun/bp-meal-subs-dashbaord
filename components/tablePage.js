@@ -8,9 +8,9 @@ import { updateDocument } from '../config/firebase';
 import ImageViewer from './imageViewer';
 import { useNotification } from '../contexts/notificationContext';
 import MultipleSelectBox from './multiSelectBox';
+import SingalSelectDropdown from './singleSelectDropdown';
 
-
-export default function TablePage({ title, columns, rows, addDocument, docRoot }) {
+export default function TablePage({ title, columns, rows, addDocument, docRoot, rowHeight }) {
     const [pageSize, setPageSize] = React.useState(20);
     const [rowsPerPageOptions, setRowsPerPageOptions] = React.useState(20);
 
@@ -31,7 +31,7 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
                     <div className='w-full h-full'>
                         {params.row[columns[i].field] ? 
                             <>
-                                {typeof params.row[columns[i].field] === 'array' ?
+                                {Array.isArray(params.value) ?
                                     <>
                                         {params.row[columns[i].field].map((thumbnail, index) => {
                                             return (
@@ -50,7 +50,7 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
                 )
             }
             delete columns[i].type;
-        } else if (columns[i].type === 'multiselect') {
+        } else if (columns[i].type === 'select' && columns[i].multiple) {
             delete columns[i].type
             columns[i].renderCell = (params) => {
                 return (
@@ -59,8 +59,42 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
                             const values = columns[i].onChange(data);
                             const updateddata = { ...params, value: values}
                             handleChange(updateddata)
-                        }} selectedValues={columns[i].selectedValue(params.value)} />
+                        }} selectedValues={columns[i].selectedValue(params.value)} multiple={columns[i].multiple ? columns[i].multiple : null} />
                     </>
+                )
+            }
+        } else if (columns[i].type === 'select' && !columns[i].multiple) {
+            delete columns[i].type
+            columns[i].renderCell = (params) => {
+                return (
+                    <Box
+                        sx={{
+                            marginTop: 2,
+                            marginBottom: 2,
+                            width: '100%',
+                        }}
+                    >
+                        <SingalSelectDropdown dataArray={columns[i].values} label={columns[i].headerName} titleFn={columns[i].title} valueFn={columns[i].value} onChange={(data) => {
+                            const values = columns[i].onChange(data);
+                            console.log(values);
+                            const updateddata = { ...params, value: values }
+                            handleChange(updateddata)
+                        }} selectedValue={params.value} />
+                    </Box>
+                )
+            }
+        } else if (columns[i].type === 'richtext') {
+            delete columns[i].type
+            columns[i].renderCell = (params) => {
+                return (
+                    <Box
+                        sx={{
+                            width: '100%',
+                            height: rowHeight
+                        }}
+                    >
+                        {params.value ? typeof (JSON.parse(params.value)) : ''}
+                    </Box>
                 )
             }
         }
@@ -70,7 +104,6 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
     const handleChange = async (params, event) => {
         const data = {};
         data[params.field] = params.value;
-        console.log(docRoot, data, params.id);
         const result = await updateDocument(docRoot, data, params.id);
         if (result) {
             setNotification({
@@ -106,17 +139,23 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot }
             }}>
                 <Box sx={{
                     width: '50%',
-                }}>
+            }}>
                     <Typography variant="h1" component="h2">
                         {title}
                     </Typography>
                 </Box>
-                <Box>
-                    <AddDocumentModal title={addDocument.title} document={addDocument.document} fields={addDocument.fields} submitLabel={addDocument.submitLabel} />
-                </Box>
+                {addDocument && Object.keys(addDocument).length
+                    ?
+                        <Box>
+                            <AddDocumentModal title={addDocument.title} document={addDocument.document} fields={addDocument.fields} submitLabel={addDocument.submitLabel} />
+                        </Box>
+                    :
+                        <></>
+                }
             </Box>
             <Box sx={{ p: 2 }}>
                 <DataGridTable
+                    rowHeight={rowHeight}
                     columns={columns}
                     rows={rows}
                     getRowId ={(row) => row.id}

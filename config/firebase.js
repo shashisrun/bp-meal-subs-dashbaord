@@ -7,20 +7,6 @@ import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "fire
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import localforage from "localforage";
 
-// import { getAnalytics } from "firebase/analytics";
-
-// bpmeals
-// const firebaseConfig = {
-//     apiKey: "AIzaSyD6PZ8JIbUX_QgCoLcT7ev0wDcCjTlhj9s",
-//     authDomain: "bp-meals-subs.firebaseapp.com",
-//     projectId: "bp-meals-subs",
-//     storageBucket: "bp-meals-subs.appspot.com",
-//     messagingSenderId: "161790716140",
-//     appId: "1:161790716140:web:ffe5c981bde85f22ce5dc9",
-//     measurementId: "G-S3SCKNCPXM"
-// };
-
-// gobistro
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

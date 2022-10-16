@@ -1,15 +1,14 @@
 import React from 'react';
 import TablePage from '../components/tablePage';
-import { getDocuments, getFile } from '../config/firebase';
+import { subscribe } from '../config/firebase';
 
 export default function Categories() {
     const [rows, setRows] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/cuisines';
+    const docroot = 'cuisines/';
 
     React.useEffect(() => {
-        const fetchData = async () => {
-            const data = await getDocuments(docroot);
-            setRows(data);
+        const fetchData = () => {
+            subscribe(docroot, setRows);
         }
         fetchData();
     },[])
@@ -68,7 +67,7 @@ export default function Categories() {
                 multiple: 10,
                 key: 'thumbnails',
                 accept: 'image/*',
-                uploadPath: 'restaurants/oscarclub/cuisines'
+                uploadPath: 'cuisines'
             },
             {
                 type: 'checkbox',
@@ -81,7 +80,7 @@ export default function Categories() {
     }
     return (
         <div>
-            <TablePage title={'Cuisines'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} />
+            <TablePage title={'Cuisines'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} rowHeight={150} />
         </div>
     )
 }

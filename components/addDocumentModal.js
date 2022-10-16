@@ -11,6 +11,8 @@ import FileUploader from './fileUploader';
 import { addDocument } from '../config/firebase';
 import MultipleSelectBox from './multiSelectBox';
 import { useNotification } from '../contexts/notificationContext';
+import SingalSelectDropdown from './singleSelectDropdown';
+import { TextareaAutosize } from '@mui/material';
 
 const style = {
     position: 'absolute',
@@ -75,7 +77,7 @@ export default function AddDocumentModal({ title, fields, submitLabel, document 
 
         setError(errorCopy);
         setForm(formCopy);
-        if (!errorCopy.length) { 
+        if (!errorCopy.length) {
             console.log(formCopy);
             const response = await addDocument(document, formCopy);
             if (response) {
@@ -179,7 +181,7 @@ export default function AddDocumentModal({ title, fields, submitLabel, document 
                                         />
                                     </Box>
                                 )
-                            } else if (field.type === 'select') {
+                            } else if (field.type === 'select' && field.multiple) {
                                 return (
                                     <Box key={index} sx={{
                                         width: '100%',
@@ -189,7 +191,45 @@ export default function AddDocumentModal({ title, fields, submitLabel, document 
                                             const currentForm = { ...form }
                                             currentForm[field.key] = data
                                             setForm(currentForm);
+                                        }} multiple={field.multiple} />
+                                    </Box>
+                                )
+                            } else if (field.type === 'select' && !field.multiple) {
+                                return (
+                                    <Box key={index} sx={{
+                                        width: '100%',
+                                        marginBottom: '10px',
+                                    }}>
+                                        <SingalSelectDropdown dataArray={field.options} label={field.name} titleFn={field.title} valueFn={field.value} onChange={(data) => {
+                                            const currentForm = { ...form }
+                                            currentForm[field.key] = data
+                                            setForm(currentForm);
                                         }} />
+                                    </Box>
+                                )
+                            } else if (field.type === 'textarea') {
+                                return (
+                                    <Box key={index} sx={{
+                                        width: '100%',
+                                        marginBottom: '10px',
+                                    }}>
+                                        <TextareaAutosize
+                                            placeholder={field.name}
+                                            onChange={(event) => {
+                                                let set = true;
+                                                if (field.regex) {
+                                                    if (!field.regex.test(event.target.value)) set = false;
+                                                }
+                                                if (set) {
+                                                    const currentForm = { ...form }
+                                                    currentForm[field.key] = event.target.value
+                                                    setForm(currentForm);
+                                                }
+                                            }}
+                                            value={form[field.key] || ''}
+                                            minRows={3}
+                                            style={{ width: '100%' }}
+                                        />
                                     </Box>
                                 )
                             }

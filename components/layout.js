@@ -27,9 +27,9 @@ export default function Layout({ children }) {
             link: '/cuisines'
         },
         {
-            title: "Foods",
+            title: "Meals",
             icon: RestaurantIcon,
-            link: '/foods'
+            link: '/meals'
         },
         {
             title: "Plans",

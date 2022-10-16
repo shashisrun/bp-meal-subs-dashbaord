@@ -1,17 +1,18 @@
 import React from 'react';
-import Image from 'next/image'
 import TablePage from '../components/tablePage';
-import { getDocuments } from '../config/firebase';
-import moment from 'moment';
+import { getDocuments, createRef, subscribe, getRef } from '../config/firebase';
 
 export default function Categories() {
     const [rows, setRows] = React.useState([]);
-    const docroot = 'restaurants/cw8bYvB7wlQPAX1mjfFl/orders';
+    const [cuisines, setCuisines] = React.useState([]);
+    const docroot = 'orders/';
 
     React.useEffect(() => {
         const fetchData = async () => {
-            const data = await getDocuments(docroot);
-            setRows(data);
+            subscribe(`${docroot}foods`, setRows)
+            getDocuments(`${docroot}cuisines`).then((data) => {
+                setCuisines(data);
+            })
         }
         fetchData();
     }, [])
@@ -20,26 +21,40 @@ export default function Categories() {
         { field: 'id', headerName: 'ID', width: 200 },
         {
             field: 'name',
-            headerName: 'Cuisine Name',
+            headerName: 'Meal Name',
             width: 150,
             editable: true,
         },
         {
-            field: 'thumbnail',
+            field: 'thumbnails',
             headerName: 'Thumbnail',
             width: 110,
             editable: false,
-            renderCell: (params) => {
-                return (
-                    <div className='w-full h-full'>
-                        {params.row.thumbnails.map((thumbnail, index) => {
-                            return (
-                                <Image src={thumbnail} alt='' className='h-full w-auto' key={index} height={1000} width={1000} />
-                            )
-                        })}
-                    </div>
-                )
-            }
+            type: 'image',
+        },
+        {
+            field: 'cuisines',
+            headerName: 'Cuisines',
+            width: 300,
+            type: 'multiselect',
+            values: cuisines,
+            title: (data) => data.name,
+            value: (data) => data.id,
+            selectedValue: (datas) => {
+                const data = [];
+                for (let i = 0; i < datas.length; i++) {
+                    data.push(datas[i].id);
+                }
+                return data;
+            },
+            onChange: (datas) => {
+                const data = [];
+                for (let i = 0; i < datas.length; i++) {
+                    data.push(createRef(`${docroot}cuisines`, datas[i]));
+                }
+                return data;
+            },
+
         },
         {
             field: 'status',
@@ -52,39 +67,52 @@ export default function Categories() {
             field: 'createdAt',
             headerName: 'Created At',
             width: 160,
-            valueFormatter: function (params) {
-                return moment(params.value.toDate()).fromNow();
-            },
+            type: 'date',
         },
         {
             field: 'updatedAt',
             headerName: 'Updated At',
-            width: 160,
-            valueFormatter: function (params) {
-                return moment(params.value.toDate()).fromNow();
-            },
+            width: 250,
+            type: 'date',
         },
     ];
 
     const addCuisine = {
-        title: 'Add cuisine',
-        document: docroot,
-        submitLabel: 'Add Cuisine',
+        title: 'Meal',
+        document: `${docroot}foods`,
+        submitLabel: 'Add Meal',
         fields: [
             {
                 type: 'text',
-                name: 'Cuisine Name',
+                name: 'Meal Name',
                 required: true,
                 key: 'name'
             },
             {
                 type: 'file',
-                name: 'Cuisine Image',
+                name: 'Meal Image',
                 required: false,
-                multiple: 5,
+                multiple: 10,
                 key: 'thumbnails',
                 accept: 'image/*',
-                uploadPath: 'restaurants/oscarclub/cuisines'
+                uploadPath: 'restaurants/oscarclub/meals'
+            },
+            {
+                type: 'select',
+                multiple: true,
+                name: 'Cuisines',
+                required: true,
+                key: 'cuisines',
+                title: (data) => data.name,
+                value: (data) => data.id,
+                preprocess: (datas) => {
+                    if (datas) {
+                        return datas.map(data => createRef(`${docroot}cuisines`, data))
+                    } else {
+                        return []
+                    }
+                },
+                options: cuisines
             },
             {
                 type: 'checkbox',
@@ -97,7 +125,7 @@ export default function Categories() {
     }
     return (
         <div>
-            <TablePage title={'Orders'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={docroot} />
+            <TablePage title={'Food Menu'} columns={columns} rows={rows} addDocument={addCuisine} docRoot={`${docroot}foods`} />
         </div>
     )
 }
