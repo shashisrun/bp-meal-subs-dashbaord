@@ -9,6 +9,7 @@ import ImageViewer from './imageViewer';
 import { useNotification } from '../contexts/notificationContext';
 import MultipleSelectBox from './multiSelectBox';
 import SingalSelectDropdown from './singleSelectDropdown';
+import { TextareaAutosize } from '@mui/material';
 
 export default function TablePage({ title, columns, rows, addDocument, docRoot, rowHeight }) {
     const [pageSize, setPageSize] = React.useState(20);
@@ -83,21 +84,36 @@ export default function TablePage({ title, columns, rows, addDocument, docRoot, 
                     </Box>
                 )
             }
-        } else if (columns[i].type === 'richtext') {
-            delete columns[i].type
-            columns[i].renderCell = (params) => {
-                return (
-                    <Box
-                        sx={{
-                            width: '100%',
-                            height: rowHeight
-                        }}
-                    >
-                        {params.value ? typeof (JSON.parse(params.value)) : ''}
-                    </Box>
-                )
-            }
         }
+        // else if (columns[i].type === 'd') {
+        //     delete columns[i].type
+        //     columns[i].renderCell = (params) => {
+        //         return (
+        //             <Box key={index} sx={{
+        //                 width: '100%',
+        //                 marginBottom: '10px',
+        //             }}>
+        //                 <TextareaAutosize
+        //                     placeholder={columns[i]}
+        //                     onChange={(event) => {
+        //                         let set = true;
+        //                         if (field.regex) {
+        //                             if (!field.regex.test(event.target.value)) set = false;
+        //                         }
+        //                         if (set) {
+        //                             const currentForm = { ...form }
+        //                             currentForm[field.key] = event.target.value
+        //                             setForm(currentForm);
+        //                         }
+        //                     }}
+        //                     value={form[field.key] || ''}
+        //                     minRows={3}
+        //                     style={{ width: '100%' }}
+        //                 />
+        //             </Box>
+        //         )
+        //     }
+        // }
         
     }
 

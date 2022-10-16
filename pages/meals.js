@@ -36,6 +36,7 @@ export default function Meals() {
             field: 'description',
             headerName: 'Description',
             type: 'textarea',
+            editable: true,
             width: 300,
         },
         {
