@@ -29,14 +29,20 @@ export default function Plans() {
             type: 'image',
         },
         {
-            field: 'monthlyFee',
-            headerName: 'Monthly Fee',
+            field: 'description',
+            headerName: 'Plan Description',
+            width: 300,
+            editable: true,
+        },
+        {
+            field: 'duration',
+            headerName: 'Duration (days)',
             width: 150,
             editable: true,
         },
         {
-            field: 'yearlyFee',
-            headerName: 'Yearly Fee',
+            field: 'price',
+            headerName: 'Price',
             width: 150,
             editable: true,
         },
@@ -82,16 +88,22 @@ export default function Plans() {
                 uploadPath: 'plans'
             },
             {
-                type: 'text',
-                name: 'Monthly Fee',
+                type: 'textarea',
+                name: 'Description',
                 required: true,
-                key: 'monthlyFee'
+                key: 'description',
             },
             {
                 type: 'text',
-                name: 'Yearly Fee',
+                name: 'Duration (days)',
                 required: true,
-                key: 'yearlyFee'
+                key: 'duration',
+            },
+            {
+                type: 'text',
+                name: 'price',
+                required: true,
+                key: 'price'
             },
             {
                 type: 'checkbox',
